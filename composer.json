@@ -1,5 +1,6 @@
 {
     "name": "donovanbroquin/flysystem-alfresco",
+    "description": "Flysystem driver using Alfresco API",
     "homepage": "https://github.com/donovanbroquin/flysystem-alfresco",
     "keywords": [
         "flysystem-alfresco",
