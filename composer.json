@@ -1,0 +1,28 @@
+{
+    "name": "donovanbroquin/flysystem-alfresco",
+    "homepage": "https://github.com/donovanbroquin/flysystem-alfresco",
+    "keywords": [
+        "flysystem-alfresco",
+        "flysystem",
+        "alfresco"
+    ],
+    "type": "library",
+    "require": {
+        "guzzlehttp/guzzle": "^7.0",
+        "league/flysystem": "^3.7.0",
+        "nesbot/carbon": "^3.7"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Donovanbroquin\\FlysystemAlfresco": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Donovan Broquin",
+            "email": "donovan@broquin.dev"
+        }
+    ],
+    "minimum-stability": "stable"
+}
