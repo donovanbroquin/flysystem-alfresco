@@ -36,11 +36,11 @@ test('ensure API url is correctly formatted', function () {
 
     $alfrescoApi = $method->invokeArgs($client, ['nodes/node-id/content']);
     expect($alfrescoApi)
-        ->toBe("http://localhost/alfresco/api/-default-/public/alfresco/versions/1/nodes/node-id/content");
+        ->toBe('http://localhost/alfresco/api/-default-/public/alfresco/versions/1/nodes/node-id/content');
 
     $searchApi = $method->invokeArgs($client, ['search', 'search']);
     expect($searchApi)
-        ->toBe("http://localhost/alfresco/api/-default-/public/search/versions/1/search");
+        ->toBe('http://localhost/alfresco/api/-default-/public/search/versions/1/search');
 });
 
 test('ensure afts path is correctly formatted', function () {
@@ -52,15 +52,15 @@ test('ensure afts path is correctly formatted', function () {
 
     $documentLibraryPath = $method->invokeArgs($client, []);
     expect($documentLibraryPath)
-        ->toBe("/app:/st:sites/cm:internal/cm:documentLibrary");
+        ->toBe('/app:/st:sites/cm:internal/cm:documentLibrary');
 
     $basicPath = $method->invokeArgs($client, ['invoice.pdf']);
     expect($basicPath)
-        ->toBe("/app:/st:sites/cm:internal/cm:documentLibrary/cm:invoice.pdf");
+        ->toBe('/app:/st:sites/cm:internal/cm:documentLibrary/cm:invoice.pdf');
 
     $nestedPath = $method->invokeArgs($client, ['customers/invoices/invoice2.pdf']);
     expect($nestedPath)
-        ->toBe("/app:/st:sites/cm:internal/cm:documentLibrary/cm:customers/cm:invoices/cm:invoice2.pdf");
+        ->toBe('/app:/st:sites/cm:internal/cm:documentLibrary/cm:customers/cm:invoices/cm:invoice2.pdf');
 });
 
 test('ensure afts query is correctly formatted', function () {
@@ -73,19 +73,18 @@ test('ensure afts query is correctly formatted', function () {
     $contentNode = $method->invokeArgs($client, ['invoice.pdf']);
     expect($contentNode)
         ->toBe([
-            "query" => [
-                "language" => "afts",
-                "query" => "PATH:'/app:/st:sites/cm:internal/cm:documentLibrary/cm:invoice.pdf' AND TYPE:'cm:content'"
-            ]
+            'query' => [
+                'language' => 'afts',
+                'query' => "PATH:'/app:/st:sites/cm:internal/cm:documentLibrary/cm:invoice.pdf' AND TYPE:'cm:content'",
+            ],
         ]);
 
     $folderNode = $method->invokeArgs($client, ['customer', 'cm:folder']);
     expect($folderNode)
         ->toBe([
-            "query" => [
-                "language" => "afts",
-                "query" => "PATH:'/app:/st:sites/cm:internal/cm:documentLibrary/cm:customer' AND TYPE:'cm:folder'"
-            ]
+            'query' => [
+                'language' => 'afts',
+                'query' => "PATH:'/app:/st:sites/cm:internal/cm:documentLibrary/cm:customer' AND TYPE:'cm:folder'",
+            ],
         ]);
 });
-

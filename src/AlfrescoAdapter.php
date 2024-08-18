@@ -100,7 +100,7 @@ class AlfrescoAdapter implements FilesystemAdapter
         return new FileAttributes(
             path: $path,
             lastModified: Carbon::parse($node->content->mimeType)
-                    ->getTimestamp()
+                ->getTimestamp()
         );
     }
 

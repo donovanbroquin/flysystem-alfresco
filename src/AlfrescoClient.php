@@ -9,9 +9,13 @@ use Psr\Http\Message\{ResponseInterface, StreamInterface};
 class AlfrescoClient
 {
     protected Client $client;
+
     protected string $url = '';
+
     protected string $endpoint = 'alfresco/api/-default-/public';
+
     protected string $version = 'versions/1';
+
     protected string $site;
 
     public function __construct(array $config)
@@ -36,7 +40,7 @@ class AlfrescoClient
             'relativePath' => $relativePath
         ] = $this->normalizePathAndFileName(path: $path);
 
-        if($exists) {
+        if ($exists) {
             $nodeId = $this->findNodeId(path: $path);
             $res = $this->updateNodeContentRequest(
                 nodeId: $nodeId,
@@ -49,7 +53,7 @@ class AlfrescoClient
                 fileName: $fileName,
                 relativePath: $relativePath,
                 nodeType: $nodeType,
-                multipart: !is_string($contents)
+                multipart: ! is_string($contents)
             );
         }
 
@@ -63,8 +67,7 @@ class AlfrescoClient
         string $relativePath,
         string $nodeType = 'cm:content',
         bool $multipart = true,
-    ): StreamInterface
-    {
+    ): StreamInterface {
         $arguments = [
             'nodeId' => $nodeId,
             'contents' => $contents,
@@ -96,7 +99,7 @@ class AlfrescoClient
                 method: 'PUT',
                 uri: $this->getApiUrl(route: "nodes/$nodeId/content"),
                 options: [
-                    'body' => $contents
+                    'body' => $contents,
                 ]
             )
             ->getBody();
@@ -172,10 +175,10 @@ class AlfrescoClient
                 method: 'POST',
                 uri: $this->getApiUrl(route: 'search', api: 'search'),
                 options: [
-                    'json' => $this->aftsQuery(type: 'cm:folder')
+                    'json' => $this->aftsQuery(type: 'cm:folder'),
                 ]
             )
-                ->getBody();
+            ->getBody();
     }
 
     protected function findNodeRequest(string $path): StreamInterface
@@ -185,7 +188,7 @@ class AlfrescoClient
                 method: 'POST',
                 uri: $this->getApiUrl(route: 'search', api: 'search'),
                 options: [
-                    'json' => $this->aftsQuery($path)
+                    'json' => $this->aftsQuery($path),
                 ]
             )
             ->getBody();
@@ -196,12 +199,12 @@ class AlfrescoClient
         $basePath = "/app:/st:sites/cm:$this->site/cm:documentLibrary";
         $exp = explode('/', $path);
 
-        if($exp[0] !== '') {
-            foreach($exp as $idx => $part) {
+        if ($exp[0] !== '') {
+            foreach ($exp as $idx => $part) {
                 $exp[$idx] = "cm:$part";
             }
 
-            $path = join('/', $exp);
+            $path = implode('/', $exp);
 
             return "$basePath/$path";
         }
@@ -214,10 +217,10 @@ class AlfrescoClient
         $aftsPath = $this->aftsPath(path: $path);
 
         return [
-            "query" => [
-                "language" => "afts",
-                "query" => "PATH:'$aftsPath' AND TYPE:'$type'"
-            ]
+            'query' => [
+                'language' => 'afts',
+                'query' => "PATH:'$aftsPath' AND TYPE:'$type'",
+            ],
         ];
     }
 
@@ -230,13 +233,13 @@ class AlfrescoClient
     {
         $decoded = json_decode($stream);
 
-        if(property_exists(object_or_class: $decoded, property: 'list')) {
+        if (property_exists(object_or_class: $decoded, property: 'list')) {
             return $decoded->list
                 ->entries[0]
                 ->entry;
         }
 
-       return $decoded->entry;
+        return $decoded->entry;
     }
 
     protected function getEntryId(StreamInterface $stream): string
@@ -249,11 +252,11 @@ class AlfrescoClient
         $explodedPath = explode(separator: '/', string: $path);
 
         $fileName = array_pop($explodedPath);
-        $relativePath = join('/', $explodedPath);
+        $relativePath = implode('/', $explodedPath);
 
         return [
             'fileName' => $fileName,
-            'relativePath' => $relativePath
+            'relativePath' => $relativePath,
         ];
     }
 
@@ -266,27 +269,27 @@ class AlfrescoClient
             'nodeType' => $nodeType,
         ] = $arguments;
 
-        if($multipart) {
+        if ($multipart) {
             return [
                 'multipart' => [
                     [
-                        'name'     => 'fileData',
+                        'name' => 'fileData',
                         'contents' => $contents,
-                        'filename' => $fileName
+                        'filename' => $fileName,
                     ],
                     [
-                        'name'     => 'name',
-                        'contents' => $fileName
+                        'name' => 'name',
+                        'contents' => $fileName,
                     ],
                     [
-                        'name'     => 'relativePath',
-                        'contents' => $relativePath
+                        'name' => 'relativePath',
+                        'contents' => $relativePath,
                     ],
                     [
-                        'name'     => 'nodeType',
-                        'contents' => $nodeType
-                    ]
-                ]
+                        'name' => 'nodeType',
+                        'contents' => $nodeType,
+                    ],
+                ],
             ];
         }
 
@@ -294,8 +297,8 @@ class AlfrescoClient
             'json' => [
                 'name' => $fileName,
                 'relativePath' => $relativePath,
-                'nodeType' => $nodeType
-            ]
+                'nodeType' => $nodeType,
+            ],
         ];
     }
 }
