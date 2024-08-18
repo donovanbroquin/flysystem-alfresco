@@ -2,6 +2,9 @@ name: "Code style fix"
 
 on: [push]
 
+permissions:
+  contents: write
+
 jobs:
   pint:
     runs-on: ubuntu-22.04
