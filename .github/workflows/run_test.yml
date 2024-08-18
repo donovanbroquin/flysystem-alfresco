@@ -1,0 +1,22 @@
+name: "Test package"
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out package code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.3
+          coverage: xdebug
+
+      - name: Composer install
+        run: composer install
+
+      - name: Run Pest
+        run: vendor/bin/pest
