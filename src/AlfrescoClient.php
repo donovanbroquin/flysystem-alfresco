@@ -8,7 +8,7 @@ use Psr\Http\Message\{ResponseInterface, StreamInterface};
 
 class AlfrescoClient
 {
-    protected AlfrescoClient $client;
+    protected Client $client;
     protected string $url = '';
     protected string $endpoint = 'alfresco/api/-default-/public';
     protected string $version = 'versions/1';
@@ -18,7 +18,7 @@ class AlfrescoClient
     {
         $this->url = $config['url'];
         $this->site = $config['site'];
-        $this->client = new AlfrescoClient([
+        $this->client = new Client([
             'base_uri' => $this->url,
             'auth' => [
                 $config['username'],

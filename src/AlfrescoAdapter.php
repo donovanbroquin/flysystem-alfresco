@@ -1,6 +1,6 @@
 <?php
 
-namespace Donovanbroquin\FlysystemAlfresco\FlysystemAlfresco;
+namespace Donovanbroquin\FlysystemAlfresco;
 
 use Carbon\Carbon;
 use League\Flysystem\{Config, FileAttributes, FilesystemAdapter};
