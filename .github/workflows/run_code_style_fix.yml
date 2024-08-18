@@ -1,0 +1,27 @@
+name: "Code style fix"
+
+on: [push]
+
+jobs:
+  pint:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out package code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.3
+          coverage: none
+
+      - name: Composer install
+        run: composer install
+
+      - name: Run Pint
+        run: vendor/bin/pint
+
+      - name: Commit and push
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: Code style fix
