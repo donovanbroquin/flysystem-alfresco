@@ -9,3 +9,7 @@
 /tests              export-ignore
 /.editorconfig      export-ignore
 /pint.json          export-ignore
+/dockerfile         export-ignore
+/.devcontainer      export-ignore
+/.github            export-ignore
+/rector.php         export-ignore
