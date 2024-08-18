@@ -14,7 +14,7 @@ function buildClient(): AlfrescoClient
     return $client;
 }
 
-test('relative path with file name should be split', function () {
+test('relative path with file name should be split', function (): void {
     $client = buildClient();
 
     $reflection = new ReflectionClass($client);
@@ -27,7 +27,7 @@ test('relative path with file name should be split', function () {
         ->and($result['relativePath'])->toBe('customers/invoices');
 });
 
-test('ensure API url is correctly formatted', function () {
+test('ensure API url is correctly formatted', function (): void {
     $client = buildClient();
 
     $reflection = new ReflectionClass($client);
@@ -43,7 +43,7 @@ test('ensure API url is correctly formatted', function () {
         ->toBe('http://localhost/alfresco/api/-default-/public/search/versions/1/search');
 });
 
-test('ensure afts path is correctly formatted', function () {
+test('ensure afts path is correctly formatted', function (): void {
     $client = buildClient();
 
     $reflection = new ReflectionClass($client);
@@ -63,7 +63,7 @@ test('ensure afts path is correctly formatted', function () {
         ->toBe('/app:/st:sites/cm:internal/cm:documentLibrary/cm:customers/cm:invoices/cm:invoice2.pdf');
 });
 
-test('ensure afts query is correctly formatted', function () {
+test('ensure afts query is correctly formatted', function (): void {
     $client = buildClient();
 
     $reflection = new ReflectionClass($client);

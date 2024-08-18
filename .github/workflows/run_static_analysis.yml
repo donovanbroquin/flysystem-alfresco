@@ -3,7 +3,7 @@ name: "Code static analysis"
 on: [push]
 
 jobs:
-  pint:
+  rector:
     runs-on: ubuntu-22.04
     steps:
       - name: Check out package code
