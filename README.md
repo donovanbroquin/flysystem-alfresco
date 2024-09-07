@@ -1,4 +1,5 @@
 # Flysystem adapter for Alfresco
+![indicate if the package pass tests](https://github.com/donovanbroquin/flysystem-alfresco/actions/workflows/run_test.yml/badge.svg)
 
 ## Install
 > This package is in development stage and not registered in Composer for now
