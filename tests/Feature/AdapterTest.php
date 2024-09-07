@@ -7,8 +7,6 @@ use League\Flysystem\{Config, FileAttributes};
 beforeEach(function (): void {
     $this->alfrescoClient = Mockery::mock(AlfrescoClient::class);
     $this->config = new Config;
-
-    // Initialize the AlfrescoAdapter with the mocked AlfrescoClient
     $this->adapter = new AlfrescoAdapter([
         'url' => 'http://mock-alfresco-url',
         'site' => 'mock-site',
@@ -16,7 +14,6 @@ beforeEach(function (): void {
         'password' => 'mock-password',
     ]);
 
-    // Set the mocked AlfrescoClient using reflection (as the client is protected)
     $reflection = new ReflectionClass($this->adapter);
     $clientProperty = $reflection->getProperty('client');
     $clientProperty->setAccessible(true);
@@ -46,7 +43,6 @@ it('checks if a directory exists', function (): void {
 it('writes a file', function (): void {
     $nodeMock = (object) ['id' => 'mock-node-id'];
 
-    // Mock the writeNode and updateNodeContent calls
     $this->alfrescoClient->shouldReceive('writeNode')
         ->with('path/to/file.txt', 'file contents')
         ->andReturn($nodeMock);
@@ -55,12 +51,10 @@ it('writes a file', function (): void {
         ->with('mock-node-id', 'file contents');
 
     $this->adapter->write('path/to/file.txt', 'file contents', $this->config);
-
-    // No need for expectations here as Mockery will throw if methods are not called correctly
-});
+})->doesNotPerformAssertions();;
 
 it('writes a stream', function (): void {
-    $resource = tmpfile(); // A resource for testing
+    $resource = tmpfile();
     fwrite($resource, 'stream contents');
     fseek($resource, 0);
 
@@ -69,15 +63,14 @@ it('writes a stream', function (): void {
 
     $this->adapter->writeStream('path/to/file.txt', $resource, $this->config);
 
-    fclose($resource); // Close the stream
-});
+    fclose($resource);
+})->doesNotPerformAssertions();;
 
 it('reads a file', function (): void {
-    $stream = tmpfile(); // Create a temporary file stream
+    $stream = tmpfile();
     fwrite($stream, 'file contents');
     fseek($stream, 0);
 
-    // Mock getNodeContent to return the stream
     $this->alfrescoClient->shouldReceive('getNodeContent')
         ->with('path/to/file.txt')
         ->andReturn($stream);
@@ -88,7 +81,7 @@ it('reads a file', function (): void {
 });
 
 it('reads a stream', function (): void {
-    $stream = tmpfile(); // Create a temporary file stream
+    $stream = tmpfile();
     fwrite($stream, 'stream contents');
     fseek($stream, 0);
 
@@ -100,7 +93,7 @@ it('reads a stream', function (): void {
 
     expect($returnedStream)->toBe($stream);
 
-    fclose($stream); // Close the stream
+    fclose($stream);
 });
 
 it('deletes a file', function (): void {
