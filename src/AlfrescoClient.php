@@ -111,9 +111,15 @@ class AlfrescoClient
         return $this->getEntryId($this->findDocumentLibraryRequest());
     }
 
-    public function findNode(string $path): \stdClass
+    public function findNode(string $path): ?\stdClass
     {
-        return $this->getEntry($this->findNodeRequest(path: $path));
+        $res = $this->findNodeRequest(path: $path);
+
+        if ($res) {
+            return $this->getEntry($res);
+        }
+
+        return null;
     }
 
     public function nodeExists(string $path): bool

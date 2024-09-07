@@ -20,7 +20,8 @@
     "require-dev": {
         "pestphp/pest": "^2.35",
         "laravel/pint": "^1.17",
-        "rector/rector": "*"
+        "rector/rector": "*",
+        "mockery/mockery": "^1.6"
     },
     "autoload": {
         "psr-4": {

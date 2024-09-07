@@ -72,14 +72,16 @@ class AlfrescoAdapter implements FilesystemAdapter
 
     public function setVisibility(string $path, string $visibility): void
     {
-        // TODO: Implement setVisibility() method.
+        throw new \LogicException('Visibility management not implemented in Alfresco.');
     }
 
     public function visibility(string $path): FileAttributes
     {
+        $node = $this->client->findNode(path: $path);
+
         return new FileAttributes(
             path: $path,
-            visibility: true
+            visibility: ! is_null($node)
         );
     }
 
@@ -117,17 +119,18 @@ class AlfrescoAdapter implements FilesystemAdapter
     public function listContents(string $path, bool $deep): iterable
     {
         // TODO: Implement listContents() method.
+        throw new \LogicException('ListContents not implemented in flysystem for now.');
     }
 
     public function move(string $source, string $destination, Config $config): void
     {
         // TODO: Implement move() method.
-        dd('inMove');
+        throw new \LogicException('Move not implemented in flysystem for now.');
     }
 
     public function copy(string $source, string $destination, Config $config): void
     {
         // TODO: Implement copy() method.
-        dd('inCopy');
+        throw new \LogicException('Copy not implemented in flysystem for now.');
     }
 }

@@ -11,7 +11,6 @@ beforeEach(function (): void {
     $handlerStack = HandlerStack::create($this->mock);
     $this->client = new Client(['handler' => $handlerStack]);
 
-    // Inject mock client in AlfrescoClient
     $this->alfrescoClient = new AlfrescoClient([
         'url' => 'http://alfresco.test',
         'site' => 'internal',
@@ -19,7 +18,6 @@ beforeEach(function (): void {
         'password' => 'internal',
     ]);
 
-    // Replace actual client with mock client
     $reflection = new ReflectionClass($this->alfrescoClient);
     $clientProperty = $reflection->getProperty('client');
     $clientProperty->setAccessible(true);
@@ -36,9 +34,11 @@ it('finds document library ID', function (): void {
 });
 
 it('finds node by path', function (): void {
-    $this->mock->append(new Response(200, [], json_encode([
-        'entry' => ['id' => 'mock-node-id'],
-    ])));
+    $this->mock->append(
+        new Response(200, [], json_encode([
+            'entry' => ['id' => 'mock-node-id'],
+        ]))
+    );
     $path = 'mock/path/to/node';
     $node = $this->alfrescoClient->findNode($path);
 
