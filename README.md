@@ -1,8 +1,55 @@
 # Flysystem adapter for Alfresco
 ![indicate if the package pass tests](https://github.com/donovanbroquin/flysystem-alfresco/actions/workflows/run_test.yml/badge.svg)
 
+A [flysystem](https://flysystem.thephpleague.com/docs/) v3 adapter to use [Alfresco](https://www.hyland.com/fr/products/alfresco-platform) sites functionality.
+
 ## Install
 > This package is in development stage and not registered in Composer for now
+
+## Usage
+### Laravel
+This package can be used as a Laravel flysystem disk.
+
+```php
+# app/Providers/AppServiceProvider.php
+use Donovanbroquin\FlysystemAlfresco\AlfrescoAdapter;
+
+public function boot(): void
+{
+    Storage::extend('alfresco', function (Application $app, array $config) {
+        $adapter = new AlfrescoAdapter($config);
+ 
+        return new FilesystemAdapter(
+            new Filesystem($adapter, $config),
+                $adapter,
+                $config
+        );
+    });
+}
+```
+
+```php
+# config/filesystems.php
+use Donovanbroquin\FlysystemAlfresco\AlfrescoAdapter;
+
+return [
+    'disks' => [
+        // ...
+
+        'alfresco' => [
+            'driver' => 'alfresco',
+            'url' => 'https://alfresco.xyz',
+            'site' => 'internal',
+            'username' => 'username',
+            'password' => 'password'
+        ]
+    ]
+]
+```
+
+```php
+Storage::disk('alfresco')->put('test.txt', 'Hello world');
+```
 
 ## Development
 ### Test
