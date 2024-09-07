@@ -5,7 +5,7 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\Psr7\{Response};
 use GuzzleHttp\{Client, HandlerStack};
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->mock = new MockHandler;
 
     $handlerStack = HandlerStack::create($this->mock);
@@ -26,7 +26,7 @@ beforeEach(function () {
     $clientProperty->setValue($this->alfrescoClient, $this->client);
 });
 
-it('finds document library ID', function () {
+it('finds document library ID', function (): void {
     $this->mock->append(new Response(200, [], json_encode([
         'entry' => ['id' => 'mock-node-id'],
     ])));
@@ -35,7 +35,7 @@ it('finds document library ID', function () {
     expect($libraryId)->toBe('mock-node-id');
 });
 
-it('finds node by path', function () {
+it('finds node by path', function (): void {
     $this->mock->append(new Response(200, [], json_encode([
         'entry' => ['id' => 'mock-node-id'],
     ])));
@@ -45,7 +45,7 @@ it('finds node by path', function () {
     expect($node->id)->toBe('mock-node-id');
 });
 
-it('checks if a node exists by path', function () {
+it('checks if a node exists by path', function (): void {
     $this->mock->append(new Response(200, [], json_encode([
         'list' => ['pagination' => ['count' => 1]],
         'entry' => ['id' => 'mock-node-id'],
@@ -56,7 +56,7 @@ it('checks if a node exists by path', function () {
     expect($exists)->toBeTrue();
 });
 
-it('replace existing node on write', function () {
+it('replace existing node on write', function (): void {
     $this->mock->append(
         new Response(200, [], json_encode([
             'list' => [
@@ -81,7 +81,7 @@ it('replace existing node on write', function () {
     expect($node->id)->toBe('new-mock-node-id');
 });
 
-it('write node if not exists', function () {
+it('write node if not exists', function (): void {
     $this->mock->append(
         new Response(200, [], json_encode([
             'list' => [
@@ -106,7 +106,7 @@ it('write node if not exists', function () {
     expect($node->id)->toBe('new-mock-node-id');
 });
 
-it('updates an existing node', function () {
+it('updates an existing node', function (): void {
     $this->mock->append(new Response(200, [], json_encode([
         'entry' => ['id' => 'mock-node-id'],
     ])));
@@ -118,7 +118,7 @@ it('updates an existing node', function () {
     expect($node->id)->toBe('mock-node-id');
 });
 
-it('deletes a node by path', function () {
+it('deletes a node by path', function (): void {
     $this->mock->append(
         new Response(200, [], json_encode([
             'list' => [
