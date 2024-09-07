@@ -51,7 +51,7 @@ it('writes a file', function (): void {
         ->with('mock-node-id', 'file contents');
 
     $this->adapter->write('path/to/file.txt', 'file contents', $this->config);
-})->doesNotPerformAssertions();;
+})->doesNotPerformAssertions();
 
 it('writes a stream', function (): void {
     $resource = tmpfile();
@@ -64,7 +64,7 @@ it('writes a stream', function (): void {
     $this->adapter->writeStream('path/to/file.txt', $resource, $this->config);
 
     fclose($resource);
-})->doesNotPerformAssertions();;
+})->doesNotPerformAssertions();
 
 it('reads a file', function (): void {
     $stream = tmpfile();
