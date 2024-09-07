@@ -2,7 +2,7 @@
 
 use Donovanbroquin\FlysystemAlfresco\AlfrescoClient;
 use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\Psr7\{Response};
+use GuzzleHttp\Psr7\{Response, Utils};
 use GuzzleHttp\{Client, HandlerStack};
 
 beforeEach(function (): void {
@@ -191,4 +191,94 @@ test('ensure afts query is correctly formatted', function (): void {
                 'query' => "PATH:'/app:/st:sites/cm:internal/cm:documentLibrary/cm:customer' AND TYPE:'cm:folder'",
             ],
         ]);
+});
+
+test('ensure write request is correctly formatted', function (): void {
+    $method = setClientMethodAsPublic(client: $this->alfrescoClient, method: 'resolveWriteBody');
+
+    $arguments = [
+        'fileName' => 'file-one.txt',
+        'relativePath' => '/',
+        'contents' => 'content-one',
+        'nodeType' => 'cm:content',
+    ];
+
+    // Multipart
+    $body = $method->invokeArgs($this->alfrescoClient, [true, $arguments]);
+    expect($body)->toBe([
+        'multipart' => [
+            [
+                'name' => 'fileData',
+                'contents' => 'content-one',
+                'filename' => 'file-one.txt',
+            ],
+            [
+                'name' => 'name',
+                'contents' => 'file-one.txt',
+            ],
+            [
+                'name' => 'relativePath',
+                'contents' => '/',
+            ],
+            [
+                'name' => 'nodeType',
+                'contents' => 'cm:content',
+            ],
+        ],
+    ]);
+
+    // JSON
+    $body = $method->invokeArgs($this->alfrescoClient, [false, $arguments]);
+    expect($body)->toBe([
+        'json' => [
+            'name' => 'file-one.txt',
+            'relativePath' => '/',
+            'nodeType' => 'cm:content',
+        ],
+    ]);
+});
+
+test('ensure the first entry in search is returned', function (): void {
+    $method = setClientMethodAsPublic(client: $this->alfrescoClient, method: 'getEntry');
+    $stream = Utils::streamFor(json_encode([
+        'list' => [
+            'entries' => [
+                [
+                    'entry' => [
+                        'name' => 'node.txt',
+                        'id' => 'search-node-id',
+                    ],
+                ],
+            ],
+        ],
+    ]));
+
+    $res = $method->invokeArgs($this->alfrescoClient, [$stream]);
+    $resAsClass = new stdClass;
+    $resAsClass->name = 'node.txt';
+    $resAsClass->id = 'search-node-id';
+
+    expect($res->id)->toBe($resAsClass->id)
+        ->and($res->name)->toBe($resAsClass->name);
+});
+
+it('must return the entry id', function (): void {
+    $method = setClientMethodAsPublic(client: $this->alfrescoClient, method: 'getEntryId');
+    $stream = Utils::streamFor(json_encode([
+        'list' => [
+            'entries' => [
+                [
+                    'entry' => [
+                        'id' => 'search-node-id',
+                    ],
+                ],
+            ],
+        ],
+    ]));
+
+    $res = $method->invokeArgs($this->alfrescoClient, [$stream]);
+    $resAsClass = new stdClass;
+    $resAsClass->id = 'search-node-id';
+
+    expect($res)->toBe($resAsClass->id);
 });
