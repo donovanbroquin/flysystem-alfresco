@@ -29,8 +29,6 @@ class AlfrescoAdapter implements FilesystemAdapter
         $node = $this->client->writeNode(path: $path, contents: $contents);
 
         $this->client->updateNodeContent(nodeId: $node->id, contents: $contents);
-
-        // TODO: delete file if content PUT fail
     }
 
     public function writeStream(string $path, $contents, Config $config): void

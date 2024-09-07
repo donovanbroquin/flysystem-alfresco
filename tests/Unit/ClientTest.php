@@ -2,8 +2,13 @@
 
 use Donovanbroquin\FlysystemAlfresco\AlfrescoClient;
 use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\Psr7\{Response, Utils};
-use GuzzleHttp\{Client, HandlerStack};
+use GuzzleHttp\Psr7\{Request, Response, Utils};
+use GuzzleHttp\{Client,
+    Exception\ClientException,
+    Exception\ConnectException,
+    Exception\ServerException,
+    Exception\TooManyRedirectsException,
+    HandlerStack};
 
 beforeEach(function (): void {
     $this->mock = new MockHandler;
@@ -44,6 +49,58 @@ it('finds node by path', function (): void {
 
     expect($node->id)->toBe('mock-node-id');
 });
+
+test('throws an exception when ClientException occurs on get node request', function (): void {
+    $this->mock->append(
+        new ClientException(
+            'Failed to get node',
+            new Request('GET', 'nodes/mock-node-id/children'),
+            new Response(400)
+        )
+    );
+
+    $path = 'mock/path/to/new-node.txt';
+    $this->alfrescoClient->writeNode($path, 'hello world');
+
+})->throws(\RuntimeException::class, 'Failed to get node');
+
+test('throws an exception when ServerException occurs on get node request', function (): void {
+    $this->mock->append(
+        new ServerException(
+            'Alfresco server error',
+            new Request('GET', 'nodes/mock-node-id/children'),
+            new Response(500)
+        )
+    );
+
+    $path = 'mock/path/to/new-node.txt';
+    $this->alfrescoClient->writeNode($path, 'hello world');
+})->throws(\RuntimeException::class, 'Alfresco server error');
+
+test('throws an exception when ConnectException occurs on get node request', function (): void {
+    $this->mock->append(
+        new ConnectException(
+            'Cannot connect to server',
+            new Request('GET', 'nodes/mock-node-id/children')
+        )
+    );
+
+    $path = 'mock/path/to/new-node.txt';
+    $this->alfrescoClient->writeNode($path, 'hello world');
+})->throws(\RuntimeException::class, 'Cannot connect to server');
+
+test('throws an exception when TooManyRedirectsException occurs on get node request', function (): void {
+    $this->mock->append(
+        new TooManyRedirectsException(
+            'Too many redirects occurred',
+            new Request('GET', 'nodes/mock-node-id/children'),
+            new Response(301)
+        )
+    );
+
+    $path = 'mock/path/to/new-node.txt';
+    $this->alfrescoClient->writeNode($path, 'hello world');
+})->throws(\RuntimeException::class, 'Too many redirect');
 
 it('checks if a node exists by path', function (): void {
     $this->mock->append(new Response(200, [], json_encode([
@@ -106,6 +163,58 @@ it('write node if not exists', function (): void {
     expect($node->id)->toBe('new-mock-node-id');
 });
 
+test('throws an exception when ClientException occurs on write node request', function (): void {
+    $this->mock->append(
+        new ClientException(
+            'Failed to write node',
+            new Request('POST', 'nodes/mock-node-id/children'),
+            new Response(400)
+        )
+    );
+
+    $path = 'mock/path/to/new-node.txt';
+    $this->alfrescoClient->writeNode($path, 'hello world');
+
+})->throws(\RuntimeException::class, 'Failed to write node');
+
+test('throws an exception when ServerException occurs on write node request', function (): void {
+    $this->mock->append(
+        new ServerException(
+            'Alfresco server error',
+            new Request('POST', 'nodes/mock-node-id/children'),
+            new Response(500)
+        )
+    );
+
+    $path = 'mock/path/to/new-node.txt';
+    $this->alfrescoClient->writeNode($path, 'hello world');
+})->throws(\RuntimeException::class, 'Alfresco server error');
+
+test('throws an exception when ConnectException occurs on write node request', function (): void {
+    $this->mock->append(
+        new ConnectException(
+            'Cannot connect to server',
+            new Request('POST', 'nodes/mock-node-id/children')
+        )
+    );
+
+    $path = 'mock/path/to/new-node.txt';
+    $this->alfrescoClient->writeNode($path, 'hello world');
+})->throws(\RuntimeException::class, 'Cannot connect to server');
+
+test('throws an exception when TooManyRedirectsException  occurs on write node request', function (): void {
+    $this->mock->append(
+        new TooManyRedirectsException(
+            'Too many redirects occurred',
+            new Request('POST', 'nodes/mock-node-id/children'),
+            new Response(301)
+        )
+    );
+
+    $path = 'mock/path/to/new-node.txt';
+    $this->alfrescoClient->writeNode($path, 'hello world');
+})->throws(\RuntimeException::class, 'Too many redirect');
+
 it('updates an existing node', function (): void {
     $this->mock->append(new Response(200, [], json_encode([
         'entry' => ['id' => 'mock-node-id'],
@@ -117,6 +226,58 @@ it('updates an existing node', function (): void {
 
     expect($node->id)->toBe('mock-node-id');
 });
+
+test('throws an exception when ClientException occurs on update node request', function (): void {
+    $this->mock->append(
+        new ClientException(
+            'Failed to update node',
+            new Request('PUT', 'nodes/mock-node-id/children'),
+            new Response(400)
+        )
+    );
+
+    $path = 'mock/path/to/new-node.txt';
+    $this->alfrescoClient->writeNode($path, 'hello world');
+
+})->throws(\RuntimeException::class, 'Failed to update node');
+
+test('throws an exception when ServerException occurs on update node request', function (): void {
+    $this->mock->append(
+        new ServerException(
+            'Alfresco server error',
+            new Request('PUT', 'nodes/mock-node-id/children'),
+            new Response(500)
+        )
+    );
+
+    $path = 'mock/path/to/new-node.txt';
+    $this->alfrescoClient->writeNode($path, 'hello world');
+})->throws(\RuntimeException::class, 'Alfresco server error');
+
+test('throws an exception when ConnectException occurs on update node request', function (): void {
+    $this->mock->append(
+        new ConnectException(
+            'Cannot connect to server',
+            new Request('PUT', 'nodes/mock-node-id/children')
+        )
+    );
+
+    $path = 'mock/path/to/new-node.txt';
+    $this->alfrescoClient->writeNode($path, 'hello world');
+})->throws(\RuntimeException::class, 'Cannot connect to server');
+
+test('throws an exception when TooManyRedirectsException occurs on update node request', function (): void {
+    $this->mock->append(
+        new TooManyRedirectsException(
+            'Too many redirects occurred',
+            new Request('PUT', 'nodes/mock-node-id/children'),
+            new Response(301)
+        )
+    );
+
+    $path = 'mock/path/to/new-node.txt';
+    $this->alfrescoClient->writeNode($path, 'hello world');
+})->throws(\RuntimeException::class, 'Too many redirect');
 
 it('deletes a node by path', function (): void {
     $this->mock->append(
@@ -133,6 +294,58 @@ it('deletes a node by path', function (): void {
 
     expect($response->getStatusCode())->toBe(204);
 });
+
+test('throws an exception when ClientException occurs on delete node request', function (): void {
+    $this->mock->append(
+        new ClientException(
+            'Failed to delete node',
+            new Request('DELETE', 'nodes/mock-node-id/children'),
+            new Response(400)
+        )
+    );
+
+    $path = 'mock/path/to/new-node.txt';
+    $this->alfrescoClient->writeNode($path, 'hello world');
+
+})->throws(\RuntimeException::class, 'Failed to delete node');
+
+test('throws an exception when ServerException occurs on delete node request', function (): void {
+    $this->mock->append(
+        new ServerException(
+            'Alfresco server error',
+            new Request('DELETE', 'nodes/mock-node-id/children'),
+            new Response(500)
+        )
+    );
+
+    $path = 'mock/path/to/new-node.txt';
+    $this->alfrescoClient->writeNode($path, 'hello world');
+})->throws(\RuntimeException::class, 'Alfresco server error');
+
+test('throws an exception when ConnectException occurs on delete node request', function (): void {
+    $this->mock->append(
+        new ConnectException(
+            'Cannot connect to server',
+            new Request('DELETE', 'nodes/mock-node-id/children')
+        )
+    );
+
+    $path = 'mock/path/to/new-node.txt';
+    $this->alfrescoClient->writeNode($path, 'hello world');
+})->throws(\RuntimeException::class, 'Cannot connect to server');
+
+test('throws an exception when TooManyRedirectsException occurs on delete node request', function (): void {
+    $this->mock->append(
+        new TooManyRedirectsException(
+            'Too many redirects occurred',
+            new Request('DELETE', 'nodes/mock-node-id/children'),
+            new Response(301)
+        )
+    );
+
+    $path = 'mock/path/to/new-node.txt';
+    $this->alfrescoClient->writeNode($path, 'hello world');
+})->throws(\RuntimeException::class, 'Too many redirect');
 
 test('relative path with file name should be split', function (): void {
     $method = setClientMethodAsPublic(client: $this->alfrescoClient, method: 'normalizePathAndFileName');

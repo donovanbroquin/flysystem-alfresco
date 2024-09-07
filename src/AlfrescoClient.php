@@ -3,6 +3,11 @@
 namespace Donovanbroquin\FlysystemAlfresco;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Exception\ServerException;
+use GuzzleHttp\Exception\TooManyRedirectsException;
 use GuzzleHttp\Psr7\StreamWrapper;
 use Psr\Http\Message\{ResponseInterface, StreamInterface};
 
@@ -77,13 +82,23 @@ class AlfrescoClient
             'nodeType' => $nodeType,
         ];
 
-        return $this->client
-            ->request(
-                method: 'POST',
-                uri: $this->getApiUrl(route: "nodes/$nodeId/children"),
-                options: $this->resolveWriteBody(multipart: $multipart, arguments: $arguments)
-            )
-            ->getBody();
+        try {
+            return $this->client
+                ->request(
+                    method: 'POST',
+                    uri: $this->getApiUrl(route: "nodes/$nodeId/children"),
+                    options: $this->resolveWriteBody(multipart: $multipart, arguments: $arguments)
+                )
+                ->getBody();
+        } catch (ClientException $e) {
+            throw new \RuntimeException("Failed to write node", $e);
+        } catch (ServerException $e) {
+            throw new \RuntimeException("Alfresco server error", $e);
+        } catch (ConnectException $e) {
+            throw new \RuntimeException("Cannot connect to server", $e);
+        } catch (TooManyRedirectsException $e) {
+            throw new \RuntimeException("Too many redirect", $e);
+        }
     }
 
     public function updateNodeContent(string $nodeId, string $contents): \stdClass
@@ -95,6 +110,8 @@ class AlfrescoClient
 
     protected function updateNodeContentRequest(string $nodeId, string $contents): StreamInterface
     {
+        try {
+
         return $this->client
             ->request(
                 method: 'PUT',
@@ -104,6 +121,15 @@ class AlfrescoClient
                 ]
             )
             ->getBody();
+        } catch (ClientException $e) {
+            throw new \RuntimeException("Failed to update node", $e);
+        } catch (ServerException $e) {
+            throw new \RuntimeException("Alfresco server error", $e);
+        } catch (ConnectException $e) {
+            throw new \RuntimeException("Cannot connect to server", $e);
+        } catch (TooManyRedirectsException $e) {
+            throw new \RuntimeException("Too many redirect", $e);
+        }
     }
 
     public function findDocumentLibraryId(): string
@@ -156,6 +182,8 @@ class AlfrescoClient
 
     protected function getNodeContentRequest(string $nodeId): ResponseInterface
     {
+        try {
+
         return $this->client
             ->request(
                 method: 'GET',
@@ -164,15 +192,35 @@ class AlfrescoClient
                     'stream' => true,
                 ]
             );
+        } catch (ClientException $e) {
+            throw new \RuntimeException("Failed to get node", $e);
+        } catch (ServerException $e) {
+            throw new \RuntimeException("Alfresco server error", $e);
+        } catch (ConnectException $e) {
+            throw new \RuntimeException("Cannot connect to server", $e);
+        } catch (TooManyRedirectsException $e) {
+            throw new \RuntimeException("Too many redirect", $e);
+        }
     }
 
     protected function deleteNodeRequest(string $nodeId): ResponseInterface
     {
+        try {
+
         return $this->client
             ->request(
                 method: 'DELETE',
                 uri: $this->getApiUrl(route: "nodes/$nodeId"),
             );
+        } catch (ClientException $e) {
+            throw new \RuntimeException("Failed to delete node", $e);
+        } catch (ServerException $e) {
+            throw new \RuntimeException("Alfresco server error", $e);
+        } catch (ConnectException $e) {
+            throw new \RuntimeException("Cannot connect to server", $e);
+        } catch (TooManyRedirectsException $e) {
+            throw new \RuntimeException("Too many redirect", $e);
+        }
     }
 
     protected function findDocumentLibraryRequest(): StreamInterface
@@ -241,9 +289,14 @@ class AlfrescoClient
         $decoded = json_decode($stream);
 
         if (property_exists(object_or_class: $decoded, property: 'list')) {
-            return $decoded->list
-                ->entries[0]
-                ->entry;
+            try {
+                return $decoded->list
+                    ->entries[0]
+                    ->entry;
+            } catch (\Exception $e) {
+                throw new \RuntimeException("Failed to get entry", $e);
+            }
+
         }
 
         return $decoded->entry;
