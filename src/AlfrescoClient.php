@@ -3,11 +3,7 @@
 namespace Donovanbroquin\FlysystemAlfresco;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Exception\ConnectException;
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Exception\ServerException;
-use GuzzleHttp\Exception\TooManyRedirectsException;
+use GuzzleHttp\Exception\{ClientException, ConnectException, ServerException, TooManyRedirectsException};
 use GuzzleHttp\Psr7\StreamWrapper;
 use Psr\Http\Message\{ResponseInterface, StreamInterface};
 
@@ -91,13 +87,13 @@ class AlfrescoClient
                 )
                 ->getBody();
         } catch (ClientException $e) {
-            throw new \RuntimeException("Failed to write node", $e);
+            throw new \RuntimeException('Failed to write node', $e);
         } catch (ServerException $e) {
-            throw new \RuntimeException("Alfresco server error", $e);
+            throw new \RuntimeException('Alfresco server error', $e);
         } catch (ConnectException $e) {
-            throw new \RuntimeException("Cannot connect to server", $e);
+            throw new \RuntimeException('Cannot connect to server', $e);
         } catch (TooManyRedirectsException $e) {
-            throw new \RuntimeException("Too many redirect", $e);
+            throw new \RuntimeException('Too many redirect', $e);
         }
     }
 
@@ -112,23 +108,23 @@ class AlfrescoClient
     {
         try {
 
-        return $this->client
-            ->request(
-                method: 'PUT',
-                uri: $this->getApiUrl(route: "nodes/$nodeId/content"),
-                options: [
-                    'body' => $contents,
-                ]
-            )
-            ->getBody();
+            return $this->client
+                ->request(
+                    method: 'PUT',
+                    uri: $this->getApiUrl(route: "nodes/$nodeId/content"),
+                    options: [
+                        'body' => $contents,
+                    ]
+                )
+                ->getBody();
         } catch (ClientException $e) {
-            throw new \RuntimeException("Failed to update node", $e);
+            throw new \RuntimeException('Failed to update node', $e);
         } catch (ServerException $e) {
-            throw new \RuntimeException("Alfresco server error", $e);
+            throw new \RuntimeException('Alfresco server error', $e);
         } catch (ConnectException $e) {
-            throw new \RuntimeException("Cannot connect to server", $e);
+            throw new \RuntimeException('Cannot connect to server', $e);
         } catch (TooManyRedirectsException $e) {
-            throw new \RuntimeException("Too many redirect", $e);
+            throw new \RuntimeException('Too many redirect', $e);
         }
     }
 
@@ -184,22 +180,22 @@ class AlfrescoClient
     {
         try {
 
-        return $this->client
-            ->request(
-                method: 'GET',
-                uri: $this->getApiUrl(route: "nodes/$nodeId/content"),
-                options: [
-                    'stream' => true,
-                ]
-            );
+            return $this->client
+                ->request(
+                    method: 'GET',
+                    uri: $this->getApiUrl(route: "nodes/$nodeId/content"),
+                    options: [
+                        'stream' => true,
+                    ]
+                );
         } catch (ClientException $e) {
-            throw new \RuntimeException("Failed to get node", $e);
+            throw new \RuntimeException('Failed to get node', $e);
         } catch (ServerException $e) {
-            throw new \RuntimeException("Alfresco server error", $e);
+            throw new \RuntimeException('Alfresco server error', $e);
         } catch (ConnectException $e) {
-            throw new \RuntimeException("Cannot connect to server", $e);
+            throw new \RuntimeException('Cannot connect to server', $e);
         } catch (TooManyRedirectsException $e) {
-            throw new \RuntimeException("Too many redirect", $e);
+            throw new \RuntimeException('Too many redirect', $e);
         }
     }
 
@@ -207,19 +203,19 @@ class AlfrescoClient
     {
         try {
 
-        return $this->client
-            ->request(
-                method: 'DELETE',
-                uri: $this->getApiUrl(route: "nodes/$nodeId"),
-            );
+            return $this->client
+                ->request(
+                    method: 'DELETE',
+                    uri: $this->getApiUrl(route: "nodes/$nodeId"),
+                );
         } catch (ClientException $e) {
-            throw new \RuntimeException("Failed to delete node", $e);
+            throw new \RuntimeException('Failed to delete node', $e);
         } catch (ServerException $e) {
-            throw new \RuntimeException("Alfresco server error", $e);
+            throw new \RuntimeException('Alfresco server error', $e);
         } catch (ConnectException $e) {
-            throw new \RuntimeException("Cannot connect to server", $e);
+            throw new \RuntimeException('Cannot connect to server', $e);
         } catch (TooManyRedirectsException $e) {
-            throw new \RuntimeException("Too many redirect", $e);
+            throw new \RuntimeException('Too many redirect', $e);
         }
     }
 
@@ -294,7 +290,7 @@ class AlfrescoClient
                     ->entries[0]
                     ->entry;
             } catch (\Exception $e) {
-                throw new \RuntimeException("Failed to get entry", $e);
+                throw new \RuntimeException('Failed to get entry', $e);
             }
 
         }
