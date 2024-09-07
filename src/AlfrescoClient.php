@@ -34,7 +34,6 @@ class AlfrescoClient
     public function writeNode(string $path, $contents = null, string $nodeType = 'cm:content')
     {
         $exists = $this->nodeExists($path);
-        $libraryId = $this->findDocumentLibraryId();
         [
             'fileName' => $fileName,
             'relativePath' => $relativePath
@@ -44,9 +43,11 @@ class AlfrescoClient
             $nodeId = $this->findNodeId(path: $path);
             $res = $this->updateNodeContentRequest(
                 nodeId: $nodeId,
-                contents: stream_get_contents($contents)
+                contents: $contents
             );
         } else {
+            $libraryId = $this->findDocumentLibraryId();
+
             $res = $this->writeNodeRequest(
                 nodeId: $libraryId,
                 contents: $contents,
