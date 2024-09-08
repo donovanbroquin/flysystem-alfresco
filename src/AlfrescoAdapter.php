@@ -3,7 +3,8 @@
 namespace Donovanbroquin\FlysystemAlfresco;
 
 use Carbon\Carbon;
-use League\Flysystem\{Config, FileAttributes, FilesystemAdapter};
+use Generator;
+use League\Flysystem\{Config, DirectoryAttributes, FileAttributes, FilesystemAdapter, StorageAttributes};
 
 class AlfrescoAdapter implements FilesystemAdapter
 {
@@ -116,8 +117,65 @@ class AlfrescoAdapter implements FilesystemAdapter
 
     public function listContents(string $path, bool $deep): iterable
     {
-        // TODO: Implement listContents() method.
-        throw new \LogicException('ListContents not implemented in flysystem for now.');
+        $nodeId = $this->client->findNodeId(path: $path, type: 'cm:folder');
+
+        foreach($this->iterateChildren(nodeId: $nodeId) as $entry) {
+            $node = $this->normalizeResponse(entry: $entry->entry, rootPath: $path);
+
+            yield $node;
+
+            if ($deep && $entry->entry->isFolder) {
+                $subFolderPath = $path . '/' . $entry->entry->name;
+                yield from $this->listContents($subFolderPath, $deep);
+            }
+        };
+    }
+
+    protected function iterateChildren(string $nodeId): Generator
+    {
+        $skipCount = 0;
+
+        $res = $this->client->getNodeChildren(nodeId: $nodeId, maxItems: 100);
+
+        yield from $res->list->entries;
+
+        $skipCount += count($res->list->entries);
+
+        while ($res->list->pagination->hasMoreItems) {
+            $res = $this->client->getNodeChildren(
+                nodeId: $nodeId,
+                skipCount: $skipCount,
+                maxItems: 1
+            );
+
+            yield from $res->list->entries;
+
+            $skipCount += count($res->list->entries);
+        }
+    }
+
+
+    protected function normalizeResponse($entry, string $rootPath): StorageAttributes
+    {
+        $timestamp = strtotime($entry->modifiedAt);
+        $path = strstr($entry->path->name, "/$rootPath") . '/' . $entry->name;
+
+        if ($entry->isFolder) {
+
+            return new DirectoryAttributes(
+                $path,
+                null,
+                $timestamp
+            );
+        }
+
+        return new FileAttributes(
+            $path,
+            $entry->content->sizeInBytes,
+            null,
+            $timestamp,
+            $entry->content->mimeType
+        );
     }
 
     public function move(string $source, string $destination, Config $config): void

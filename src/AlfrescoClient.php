@@ -133,9 +133,9 @@ class AlfrescoClient
         return $this->getEntryId($this->findDocumentLibraryRequest());
     }
 
-    public function findNode(string $path): ?\stdClass
+    public function findNode(string $path, string $type = 'cm:content'): ?\stdClass
     {
-        $res = $this->findNodeRequest(path: $path);
+        $res = $this->findNodeRequest(path: $path, type: $type);
 
         if ($res) {
             return $this->getEntry($res);
@@ -144,17 +144,17 @@ class AlfrescoClient
         return null;
     }
 
-    public function nodeExists(string $path): bool
+    public function nodeExists(string $path, string $type = 'cm:content'): bool
     {
-        return json_decode($this->findNodeRequest(path: $path))
+        return json_decode($this->findNodeRequest(path: $path, type: $type))
                 ->list
                 ->pagination
                 ->count > 0;
     }
 
-    public function findNodeId(string $path): string
+    public function findNodeId(string $path, string $type = 'cm:content'): string
     {
-        return $this->getEntryId($this->findNodeRequest($path));
+        return $this->getEntryId($this->findNodeRequest(path: $path, type: $type));
     }
 
     public function getNodeContent(string $path)
@@ -232,14 +232,14 @@ class AlfrescoClient
             ->getBody();
     }
 
-    protected function findNodeRequest(string $path): StreamInterface
+    protected function findNodeRequest(string $path, string $type = 'cm:content'): StreamInterface
     {
         return $this->client
             ->request(
                 method: 'POST',
                 uri: $this->getApiUrl(route: 'search', api: 'search'),
                 options: [
-                    'json' => $this->aftsQuery($path),
+                    'json' => $this->aftsQuery(path: $path, type: $type),
                 ]
             )
             ->getBody();
@@ -356,5 +356,39 @@ class AlfrescoClient
                 'nodeType' => $nodeType,
             ],
         ];
+    }
+
+    public function getNodeChildren(string $nodeId, int $skipCount = 0, int $maxItems = 100)
+    {
+        return json_decode(
+            $this->getNodeChildrenRequest(nodeId: $nodeId, skipCount: $skipCount, maxItems: $maxItems)
+        );
+    }
+
+    protected function getNodeChildrenRequest(string $nodeId, int $skipCount = 0, int $maxItems = 100): StreamInterface
+    {
+        try {
+            return $this->client
+                ->request(
+                    method: 'GET',
+                    uri: $this->getApiUrl(route: "nodes/$nodeId/children"),
+                    options: [
+                        'query' => [
+                            'maxItems' => $maxItems,
+                            'skipCount' => $skipCount,
+                            'include' => 'path'
+                        ]
+                    ]
+                )
+                ->getBody();
+        } catch (ClientException $e) {
+            throw new \RuntimeException('Failed to update node', $e);
+        } catch (ServerException $e) {
+            throw new \RuntimeException('Alfresco server error', $e);
+        } catch (ConnectException $e) {
+            throw new \RuntimeException('Cannot connect to server', $e);
+        } catch (TooManyRedirectsException $e) {
+            throw new \RuntimeException('Too many redirect', $e);
+        }
     }
 }
