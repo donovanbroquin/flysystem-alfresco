@@ -376,8 +376,8 @@ class AlfrescoClient
                         'query' => [
                             'maxItems' => $maxItems,
                             'skipCount' => $skipCount,
-                            'include' => 'path'
-                        ]
+                            'include' => 'path',
+                        ],
                     ]
                 )
                 ->getBody();

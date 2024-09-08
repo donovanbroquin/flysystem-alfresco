@@ -119,16 +119,16 @@ class AlfrescoAdapter implements FilesystemAdapter
     {
         $nodeId = $this->client->findNodeId(path: $path, type: 'cm:folder');
 
-        foreach($this->iterateChildren(nodeId: $nodeId) as $entry) {
+        foreach ($this->iterateChildren(nodeId: $nodeId) as $entry) {
             $node = $this->normalizeResponse(entry: $entry->entry, rootPath: $path);
 
             yield $node;
 
             if ($deep && $entry->entry->isFolder) {
-                $subFolderPath = $path . '/' . $entry->entry->name;
+                $subFolderPath = $path.'/'.$entry->entry->name;
                 yield from $this->listContents($subFolderPath, $deep);
             }
-        };
+        }
     }
 
     protected function iterateChildren(string $nodeId): Generator
@@ -154,11 +154,10 @@ class AlfrescoAdapter implements FilesystemAdapter
         }
     }
 
-
     protected function normalizeResponse($entry, string $rootPath): StorageAttributes
     {
         $timestamp = strtotime($entry->modifiedAt);
-        $path = strstr($entry->path->name, "/$rootPath") . '/' . $entry->name;
+        $path = strstr($entry->path->name, "/$rootPath").'/'.$entry->name;
 
         if ($entry->isFolder) {
 
