@@ -29,6 +29,10 @@ beforeEach(function (): void {
     $clientProperty->setValue($this->alfrescoClient, $this->client);
 });
 
+afterEach(function () {
+    Mockery::close();
+});
+
 it('finds document library ID', function (): void {
     $this->mock->append(new Response(200, [], json_encode([
         'entry' => ['id' => 'mock-node-id'],
@@ -495,3 +499,80 @@ it('must return the entry id', function (): void {
 
     expect($res)->toBe($resAsClass->id);
 });
+
+it('successfully retrieves node children', function (): void {
+    $response = json_encode([
+        'list' => [
+            'entries' => [
+                ['entry' => ['name' => 'file1.txt', 'isFolder' => false]],
+                ['entry' => ['name' => 'folder1', 'isFolder' => true]],
+            ],
+            'pagination' => [
+                'hasMoreItems' => false,
+            ]
+        ]
+    ]);
+
+    $this->mock->append(new Response(200, [], $response));
+
+    $nodeId = 'mock-node-id';
+    $result = $this->alfrescoClient->getNodeChildren($nodeId);
+
+    expect($result->list->entries)->toHaveCount(2);
+    expect($result->list->entries[0]->entry->name)->toBe('file1.txt');
+});
+
+// Test handling of ClientException
+test('throws an exception when ClientException occurs on getNodeChildren request', function (): void {
+    $this->mock->append(
+        new ClientException(
+            'Failed to get node children',
+            new Request('GET', 'nodes/mock-node-id/children'),
+            new Response(400)
+        )
+    );
+
+    $nodeId = 'mock-node-id';
+    $this->alfrescoClient->getNodeChildren($nodeId);
+})->throws(\RuntimeException::class, 'Failed to get node children');
+
+// Test handling of ServerException
+test('throws an exception when ServerException occurs on getNodeChildren request', function (): void {
+    $this->mock->append(
+        new ServerException(
+            'Alfresco server error',
+            new Request('GET', 'nodes/mock-node-id/children'),
+            new Response(500)
+        )
+    );
+
+    $nodeId = 'mock-node-id';
+    $this->alfrescoClient->getNodeChildren($nodeId);
+})->throws(\RuntimeException::class, 'Alfresco server error');
+
+// Test handling of ConnectException
+test('throws an exception when ConnectException occurs on getNodeChildren request', function (): void {
+    $this->mock->append(
+        new ConnectException(
+            'Cannot connect to server',
+            new Request('GET', 'nodes/mock-node-id/children')
+        )
+    );
+
+    $nodeId = 'mock-node-id';
+    $this->alfrescoClient->getNodeChildren($nodeId);
+})->throws(\RuntimeException::class, 'Cannot connect to server');
+
+// Test handling of TooManyRedirectsException
+test('throws an exception when TooManyRedirectsException occurs on getNodeChildren request', function (): void {
+    $this->mock->append(
+        new TooManyRedirectsException(
+            'Too many redirects occurred',
+            new Request('GET', 'nodes/mock-node-id/children'),
+            new Response(301)
+        )
+    );
+
+    $nodeId = 'mock-node-id';
+    $this->alfrescoClient->getNodeChildren($nodeId);
+})->throws(\RuntimeException::class, 'Too many redirect');

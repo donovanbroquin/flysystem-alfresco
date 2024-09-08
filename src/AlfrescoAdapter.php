@@ -134,7 +134,6 @@ class AlfrescoAdapter implements FilesystemAdapter
     protected function iterateChildren(string $nodeId): Generator
     {
         $skipCount = 0;
-
         $res = $this->client->getNodeChildren(nodeId: $nodeId, maxItems: 100);
 
         yield from $res->list->entries;

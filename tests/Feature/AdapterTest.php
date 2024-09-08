@@ -2,7 +2,7 @@
 
 use Carbon\Carbon;
 use Donovanbroquin\FlysystemAlfresco\{AlfrescoAdapter, AlfrescoClient};
-use League\Flysystem\{Config, FileAttributes};
+use League\Flysystem\{Config, DirectoryAttributes, FileAttributes};
 
 beforeEach(function (): void {
     $this->alfrescoClient = Mockery::mock(AlfrescoClient::class);
@@ -165,4 +165,164 @@ it('retrieves file size', function (): void {
     $attributes = $this->adapter->fileSize('path/to/file.txt');
 
     expect($attributes->fileSize())->toBe(123456);
+});
+
+it('lists contents without recursion', function (): void {
+    $nodeId = 'mock-node-id';
+    $entries = [
+        (object) [
+            'entry' => (object) [
+                'isFile' => true,
+                'isFolder' => false,
+                'name' => 'file1.txt',
+                'path' => (object) [
+                    'name' => '/root/library/path/to/directory'
+                ],
+                'modifiedAt' => '2024-09-01T12:00:00',
+                'content' => (object) [
+                    'sizeInBytes' => 123,
+                    'mimeType' => 'text/plain'
+                ]
+            ]
+        ],
+        (object) [
+            'entry' => (object) [
+                'isFile' => true,
+                'isFolder' => false,
+                'name' => 'file2.txt',
+                'path' => (object) [
+                    'name' => '/root/library/path/to/directory'
+                ],
+                'modifiedAt' => '2024-09-01T12:00:00',
+                'content' => (object) [
+                    'sizeInBytes' => 123,
+                    'mimeType' => 'text/plain'
+                ]
+            ]
+        ]
+    ];
+
+    $this->alfrescoClient->shouldReceive('findNodeId')
+        ->with('path/to/directory', 'cm:folder')
+        ->andReturn($nodeId);
+
+    $this->alfrescoClient->shouldReceive('getNodeChildren')
+        ->with($nodeId, 0, 100)
+        ->andReturn((object) ['list' => (object) ['entries' => $entries, 'pagination' => (object) ['hasMoreItems' => false]]]);
+
+    $contents = iterator_to_array($this->adapter->listContents('path/to/directory', false));
+
+    expect($contents)->toHaveCount(2)
+        ->and($contents[0]->path())->toBe('path/to/directory/file1.txt')
+        ->and($contents[1]->path())->toBe('path/to/directory/file2.txt');
+});
+
+it('lists contents with recursion', function (): void {
+    $rootNodeId = 'root-node-id';
+    $subDirNodeId = 'sub-dir-node-id';
+
+    $entries = [
+        (object) [
+            'entry' => (object) [
+                'isFile' => false,
+                'isFolder' => true,
+                'name' => 'subdir',
+                'path' => (object) [
+                    'name' => '/root/library/path/to'
+                ],
+                'modifiedAt' => '2024-09-01T12:00:00'
+            ]
+        ],
+        (object) [
+            'entry' => (object) [
+                'isFile' => true,
+                'isFolder' => false,
+                'name' => 'file1.txt',
+                'path' => (object) [
+                    'name' => '/root/library/path/to'
+                ],
+                'modifiedAt' => '2024-09-01T12:00:00',
+                'content' => (object) [
+                    'sizeInBytes' => 123,
+                    'mimeType' => 'text/plain'
+                ]
+            ]
+        ]
+    ];
+
+    $subDirEntries = [
+        (object) [
+            'entry' => (object) [
+                'isFile' => true,
+                'isFolder' => false,
+                'name' => 'subfile.txt',
+                'path' => (object) [
+                    'name' => '/root/library/path/to/subdir'
+                ],
+                'modifiedAt' => '2024-09-01T12:00:00',
+                'content' => (object) [
+                    'sizeInBytes' => 456,
+                    'mimeType' => 'text/plain'
+                ]
+            ]
+        ]
+    ];
+
+    $this->alfrescoClient->shouldReceive('findNodeId')
+        ->with('path/to', 'cm:folder')
+        ->andReturn($rootNodeId);
+
+    $this->alfrescoClient->shouldReceive('findNodeId')
+        ->with('path/to/subdir', 'cm:folder')
+        ->andReturn($subDirNodeId);
+
+    $this->alfrescoClient->shouldReceive('getNodeChildren')
+        ->with($rootNodeId, 0, 100)
+        ->andReturn((object) ['list' => (object) ['entries' => $entries, 'pagination' => (object) ['hasMoreItems' => false]]]);
+
+    $this->alfrescoClient->shouldReceive('getNodeChildren')
+        ->with($subDirNodeId, 0, 100)
+        ->andReturn((object) ['list' => (object) ['entries' => $subDirEntries, 'pagination' => (object) ['hasMoreItems' => false]]]);
+
+    $contents = iterator_to_array($this->adapter->listContents('path/to', true));
+
+    expect($contents)->toHaveCount(2)
+        ->and($contents[0]->path())->toBe('path/to/subdir/subfile.txt')
+        ->and($contents[1]->path())->toBe('path/to/file1.txt');
+});
+
+it('normalizes file entry response', function (): void {
+    $method = setClientMethodAsPublic(client: $this->adapter, method: 'normalizeResponse');
+    $entry = (object) [
+        'name' => 'file.txt',
+        'modifiedAt' => '2024-09-01T12:00:00',
+        'path' => (object) ['name' => 'path'],
+        'isFile' => true,
+        'isFolder' => false,
+        'content' => (object) ['sizeInBytes' => 123, 'mimeType' => 'text/plain']
+    ];
+    $rootPath = 'path';
+
+    $normalized = $method->invokeArgs($this->adapter, [$entry, $rootPath]);
+
+    expect($normalized)->toBeInstanceOf(FileAttributes::class)
+        ->and($normalized->path())->toBe('file.txt')
+        ->and($normalized->fileSize())->toBe(123)
+        ->and($normalized->mimeType())->toBe('text/plain');
+});
+
+it('normalizes folder entry response', function (): void {
+    $method = setClientMethodAsPublic(client: $this->adapter, method: 'normalizeResponse');
+    $entry = (object) [
+        'name' => 'folder',
+        'modifiedAt' => '2024-09-01T12:00:00',
+        'path' => (object) ['name' => 'path'],
+        'isFolder' => true
+    ];
+    $rootPath = 'path';
+
+    $normalized = $method->invokeArgs($this->adapter, [$entry, $rootPath]);
+
+    expect($normalized)->toBeInstanceOf(DirectoryAttributes::class)
+        ->and($normalized->path())->toBe('folder');
 });

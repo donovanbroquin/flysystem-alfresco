@@ -87,13 +87,13 @@ class AlfrescoClient
                 )
                 ->getBody();
         } catch (ClientException $e) {
-            throw new \RuntimeException('Failed to write node', $e);
+            throw new \RuntimeException('Failed to write node', $e->getCode(), $e);
         } catch (ServerException $e) {
-            throw new \RuntimeException('Alfresco server error', $e);
+            throw new \RuntimeException('Alfresco server error', $e->getCode(), $e);
         } catch (ConnectException $e) {
-            throw new \RuntimeException('Cannot connect to server', $e);
+            throw new \RuntimeException('Cannot connect to server', $e->getCode(), $e);
         } catch (TooManyRedirectsException $e) {
-            throw new \RuntimeException('Too many redirect', $e);
+            throw new \RuntimeException('Too many redirect', $e->getCode(), $e);
         }
     }
 
@@ -118,13 +118,13 @@ class AlfrescoClient
                 )
                 ->getBody();
         } catch (ClientException $e) {
-            throw new \RuntimeException('Failed to update node', $e);
+            throw new \RuntimeException('Failed to update node', $e->getCode(), $e);
         } catch (ServerException $e) {
-            throw new \RuntimeException('Alfresco server error', $e);
+            throw new \RuntimeException('Alfresco server error', $e->getCode(), $e);
         } catch (ConnectException $e) {
-            throw new \RuntimeException('Cannot connect to server', $e);
+            throw new \RuntimeException('Cannot connect to server', $e->getCode(), $e);
         } catch (TooManyRedirectsException $e) {
-            throw new \RuntimeException('Too many redirect', $e);
+            throw new \RuntimeException('Too many redirect', $e->getCode(), $e);
         }
     }
 
@@ -189,13 +189,13 @@ class AlfrescoClient
                     ]
                 );
         } catch (ClientException $e) {
-            throw new \RuntimeException('Failed to get node', $e);
+            throw new \RuntimeException('Failed to get node', $e->getCode(), $e);
         } catch (ServerException $e) {
-            throw new \RuntimeException('Alfresco server error', $e);
+            throw new \RuntimeException('Alfresco server error', $e->getCode(), $e);
         } catch (ConnectException $e) {
-            throw new \RuntimeException('Cannot connect to server', $e);
+            throw new \RuntimeException('Cannot connect to server', $e->getCode(), $e);
         } catch (TooManyRedirectsException $e) {
-            throw new \RuntimeException('Too many redirect', $e);
+            throw new \RuntimeException('Too many redirect', $e->getCode(), $e);
         }
     }
 
@@ -209,13 +209,13 @@ class AlfrescoClient
                     uri: $this->getApiUrl(route: "nodes/$nodeId"),
                 );
         } catch (ClientException $e) {
-            throw new \RuntimeException('Failed to delete node', $e);
+            throw new \RuntimeException('Failed to delete node', $e->getCode(), $e);
         } catch (ServerException $e) {
-            throw new \RuntimeException('Alfresco server error', $e);
+            throw new \RuntimeException('Alfresco server error', $e->getCode(), $e);
         } catch (ConnectException $e) {
-            throw new \RuntimeException('Cannot connect to server', $e);
+            throw new \RuntimeException('Cannot connect to server', $e->getCode(), $e);
         } catch (TooManyRedirectsException $e) {
-            throw new \RuntimeException('Too many redirect', $e);
+            throw new \RuntimeException('Too many redirect', $e->getCode(), $e);
         }
     }
 
@@ -382,13 +382,13 @@ class AlfrescoClient
                 )
                 ->getBody();
         } catch (ClientException $e) {
-            throw new \RuntimeException('Failed to update node', $e);
+            throw new \RuntimeException('Failed to get node children', $e->getCode(), $e);
         } catch (ServerException $e) {
-            throw new \RuntimeException('Alfresco server error', $e);
+            throw new \RuntimeException('Alfresco server error', $e->getCode(), $e);
         } catch (ConnectException $e) {
-            throw new \RuntimeException('Cannot connect to server', $e);
+            throw new \RuntimeException('Cannot connect to server', $e->getCode(), $e);
         } catch (TooManyRedirectsException $e) {
-            throw new \RuntimeException('Too many redirect', $e);
+            throw new \RuntimeException('Too many redirect', $e->getCode(), $e);
         }
     }
 }

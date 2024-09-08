@@ -21,7 +21,8 @@
         "pestphp/pest": "^2.35",
         "laravel/pint": "^1.17",
         "rector/rector": "*",
-        "mockery/mockery": "^1.6"
+        "mockery/mockery": "^1.6",
+        "symfony/var-dumper": "^7.1"
     },
     "autoload": {
         "psr-4": {
