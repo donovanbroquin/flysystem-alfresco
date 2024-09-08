@@ -176,14 +176,14 @@ it('lists contents without recursion', function (): void {
                 'isFolder' => false,
                 'name' => 'file1.txt',
                 'path' => (object) [
-                    'name' => '/root/library/path/to/directory'
+                    'name' => '/root/library/path/to/directory',
                 ],
                 'modifiedAt' => '2024-09-01T12:00:00',
                 'content' => (object) [
                     'sizeInBytes' => 123,
-                    'mimeType' => 'text/plain'
-                ]
-            ]
+                    'mimeType' => 'text/plain',
+                ],
+            ],
         ],
         (object) [
             'entry' => (object) [
@@ -191,15 +191,15 @@ it('lists contents without recursion', function (): void {
                 'isFolder' => false,
                 'name' => 'file2.txt',
                 'path' => (object) [
-                    'name' => '/root/library/path/to/directory'
+                    'name' => '/root/library/path/to/directory',
                 ],
                 'modifiedAt' => '2024-09-01T12:00:00',
                 'content' => (object) [
                     'sizeInBytes' => 123,
-                    'mimeType' => 'text/plain'
-                ]
-            ]
-        ]
+                    'mimeType' => 'text/plain',
+                ],
+            ],
+        ],
     ];
 
     $this->alfrescoClient->shouldReceive('findNodeId')
@@ -228,10 +228,10 @@ it('lists contents with recursion', function (): void {
                 'isFolder' => true,
                 'name' => 'subdir',
                 'path' => (object) [
-                    'name' => '/root/library/path/to'
+                    'name' => '/root/library/path/to',
                 ],
-                'modifiedAt' => '2024-09-01T12:00:00'
-            ]
+                'modifiedAt' => '2024-09-01T12:00:00',
+            ],
         ],
         (object) [
             'entry' => (object) [
@@ -239,15 +239,15 @@ it('lists contents with recursion', function (): void {
                 'isFolder' => false,
                 'name' => 'file1.txt',
                 'path' => (object) [
-                    'name' => '/root/library/path/to'
+                    'name' => '/root/library/path/to',
                 ],
                 'modifiedAt' => '2024-09-01T12:00:00',
                 'content' => (object) [
                     'sizeInBytes' => 123,
-                    'mimeType' => 'text/plain'
-                ]
-            ]
-        ]
+                    'mimeType' => 'text/plain',
+                ],
+            ],
+        ],
     ];
 
     $subDirEntries = [
@@ -257,15 +257,15 @@ it('lists contents with recursion', function (): void {
                 'isFolder' => false,
                 'name' => 'subfile.txt',
                 'path' => (object) [
-                    'name' => '/root/library/path/to/subdir'
+                    'name' => '/root/library/path/to/subdir',
                 ],
                 'modifiedAt' => '2024-09-01T12:00:00',
                 'content' => (object) [
                     'sizeInBytes' => 456,
-                    'mimeType' => 'text/plain'
-                ]
-            ]
-        ]
+                    'mimeType' => 'text/plain',
+                ],
+            ],
+        ],
     ];
 
     $this->alfrescoClient->shouldReceive('findNodeId')
@@ -299,7 +299,7 @@ it('normalizes file entry response', function (): void {
         'path' => (object) ['name' => 'path'],
         'isFile' => true,
         'isFolder' => false,
-        'content' => (object) ['sizeInBytes' => 123, 'mimeType' => 'text/plain']
+        'content' => (object) ['sizeInBytes' => 123, 'mimeType' => 'text/plain'],
     ];
     $rootPath = 'path';
 
@@ -317,7 +317,7 @@ it('normalizes folder entry response', function (): void {
         'name' => 'folder',
         'modifiedAt' => '2024-09-01T12:00:00',
         'path' => (object) ['name' => 'path'],
-        'isFolder' => true
+        'isFolder' => true,
     ];
     $rootPath = 'path';
 

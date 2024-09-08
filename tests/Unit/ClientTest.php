@@ -509,8 +509,8 @@ it('successfully retrieves node children', function (): void {
             ],
             'pagination' => [
                 'hasMoreItems' => false,
-            ]
-        ]
+            ],
+        ],
     ]);
 
     $this->mock->append(new Response(200, [], $response));
