@@ -12,7 +12,12 @@ This package can be used as a Laravel flysystem disk.
 
 ```php
 # app/Providers/AppServiceProvider.php
+
 use Donovanbroquin\FlysystemAlfresco\AlfrescoAdapter;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Filesystem\FilesystemAdapter;
+use League\Flysystem\Filesystem;
 
 public function boot(): void
 {
@@ -30,7 +35,6 @@ public function boot(): void
 
 ```php
 # config/filesystems.php
-use Donovanbroquin\FlysystemAlfresco\AlfrescoAdapter;
 
 return [
     'disks' => [
