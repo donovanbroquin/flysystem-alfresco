@@ -123,7 +123,15 @@ class AlfrescoAdapter implements FilesystemAdapter
     public function move(string $source, string $destination, Config $config): void
     {
         // TODO: Implement move() method.
-        throw new \LogicException('Move not implemented in flysystem for now.');
+        // throw new \LogicException('Move not implemented in flysystem for now.');
+
+        // Take file content
+        // Write node in the new place
+        // Delete the original
+
+        $contents = $this->client->getNodeContent(path: $source);
+        $this->writeStream($destination, $contents, $config);
+        $this->delete($source);
     }
 
     public function copy(string $source, string $destination, Config $config): void
